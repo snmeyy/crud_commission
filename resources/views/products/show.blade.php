@@ -5,36 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Laravel CRUD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite('resources/css/app.css')
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body style="background: rgb(255, 230, 230)">
-
-    <div class="container mt-5 mb-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded">
-                    <div class="card-body">
-                        <img src="{{ asset('image') }}/{{$product->image}}" class="rounded" style="width: 100%">
-                    </div>
+<body class="bg-white text-gray-800">
+    <div class="container mx-auto py-10">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Image Section -->
+            <div class="md:w-1/3">
+                <div class="rounded-lg overflow-hidden shadow">
+                    <img src="{{ asset('image') }}/{{$product->image}}" alt="Product Image" class="w-full">
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm rounded">
-                    <div class="card-body">
-                        <h3>{{ $product->title }}</h3>
-                        <hr/>
-                        <p>{{ "Rp " . number_format($product->price,2,',','.') }}</p>
-                        <code>
-                            <p>{!! $product->description !!}</p>
-                        </code>
-                        <hr/>
-                        <p>Stock : {{ $product->stock }}</p>
-                    </div>
+
+            <!-- Details Section -->
+            <div class="md:w-2/3">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-2xl font-semibold mb-4">{{ $product->title }}</h3>
+                    <p class="text-xl font-bold text-gray-700 mb-4">{{ "Rp " . number_format($product->price,2,',','.') }}</p>
+                    <p class="text-gray-600 mb-4">{!! $product->description !!}</p>
+                    <p class="text-gray-500">Stock: <span class="font-medium">{{ $product->stock }}</span></p>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

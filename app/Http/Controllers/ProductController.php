@@ -1,20 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
-//import model product
-use App\Models\Product; 
-
-//import return type View
+use App\Models\Product;
 use Illuminate\View\View;
-
-//import return type redirectResponse
 use Illuminate\Http\Request;
-
-//import Http Request
 use Illuminate\Http\RedirectResponse;
-
-//import Facades Storage
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -26,12 +16,10 @@ class ProductController extends Controller
      */
     public function index() : View
     {
-        //get all products
-        $products = Product::latest()->paginate(10);
-
-        //render view with products
+        $products = Product::paginate(10);
         return view('products.index', compact('products'));
     }
+
 
     /**
      * create
@@ -40,7 +28,8 @@ class ProductController extends Controller
      */
     public function create(): View
     {
-        return view('products.create');
+        $products = Product::all();
+        return view('products.create', compact('products'));
     }
 
     /**
@@ -51,7 +40,6 @@ class ProductController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        //validate form
         $request->validate([
             'image'         => 'required|image|mimes:jpeg,jpg,png|max:2048',
             'title'         => 'required|min:5',
@@ -60,14 +48,11 @@ class ProductController extends Controller
             'stock'         => 'required|numeric'
         ]);
 
-        //upload image
         $image = $request->file('image');
-        //$image->storeAs('public/products', $image->hashName());
         $name = time().'.'.$image->getClientOriginalExtension();
         $destinationPath = public_path('/image');
         $image->move($destinationPath, $name);
 
-        //create product
         Product::create([
             'image'         => $name,
             'title'         => $request->title,
@@ -76,10 +61,9 @@ class ProductController extends Controller
             'stock'         => $request->stock
         ]);
 
-        //redirect to index
         return redirect()->route('products.index')->with(['success' => 'Data Berhasil Disimpan!']);
     }
-    
+
     /**
      * show
      *
@@ -88,13 +72,11 @@ class ProductController extends Controller
      */
     public function show(string $id): View
     {
-        //get product by ID
         $product = Product::findOrFail($id);
 
-        //render view with product
         return view('products.show', compact('product'));
     }
-    
+
     /**
      * edit
      *
@@ -103,13 +85,11 @@ class ProductController extends Controller
      */
     public function edit(string $id): View
     {
-        //get product by ID
         $product = Product::findOrFail($id);
 
-        //render view with product
         return view('products.edit', compact('product'));
     }
-        
+
     /**
      * update
      *
@@ -119,7 +99,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
-        //validate form
         $request->validate([
             'image'         => 'image|mimes:jpeg,jpg,png|max:2048',
             'title'         => 'required|min:5',
@@ -128,20 +107,15 @@ class ProductController extends Controller
             'stock'         => 'required|numeric'
         ]);
 
-        //get product by ID
         $product = Product::findOrFail($id);
 
-        //check if image is uploaded
         if ($request->hasFile('image')) {
 
-            //upload new image
             $image = $request->file('image');
             $image->storeAs('public/products', $image->hashName());
 
-            //delete old image
             Storage::delete('public/products/'.$product->image);
 
-            //update product with new image
             $product->update([
                 'image'         => $image->hashName(),
                 'title'         => $request->title,
@@ -152,7 +126,6 @@ class ProductController extends Controller
 
         } else {
 
-            //update product without image
             $product->update([
                 'title'         => $request->title,
                 'description'   => $request->description,
@@ -161,7 +134,6 @@ class ProductController extends Controller
             ]);
         }
 
-        //redirect to index
         return redirect()->route('products.index')->with(['success' => 'Data Berhasil Diubah!']);
     }
 
@@ -173,16 +145,12 @@ class ProductController extends Controller
      */
     public function destroy($id): RedirectResponse
     {
-        //get product by ID
         $product = Product::findOrFail($id);
 
-        //delete image
         Storage::delete('public/products/'. $product->image);
 
-        //delete product
         $product->delete();
 
-        //redirect to index
         return redirect()->route('products.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 }
